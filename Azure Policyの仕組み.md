@@ -72,7 +72,7 @@ Value
 
 今回の<span style="color: red;">**評価対象リソース**</span>がライフサイクル管理の場合  
 "[resourceGroup().name]の結果は  
-以下のリソースIDのリソースグループ名が返ってくる 
+以下のリソースIDのリソースグループ名が返ってくる  
 ●リソースID  
 ```
 /subscription/XXX(サブスクリプション名)
