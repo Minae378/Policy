@@ -130,3 +130,7 @@ split(field('fullName'),'/'
 /storageAccounts/xxx(ストレージアカウント名)
 /managementPolicies/default(ライフサイクル管理名は常にdefault)
 ```
+
+
+関数の説明ページ：  
+https://learn.microsoft.com/ja-jp/azure/azure-resource-manager/templates/template-functions
