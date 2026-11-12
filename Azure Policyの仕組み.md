@@ -25,8 +25,8 @@ Microsoft.storage/storateAccounts
 Microsoft.storage/storateAccounts/managementPolicies
 ```
 
-Azureポータルでは同じストレージアカウント画面から操作するため、同じリソースを変更しているように見えるが、
-Azure Rexouuce Managerでは別リソースとして扱われる
+Azureポータルでは同じストレージアカウント画面から操作するため、同じリソースを変更しているように見えるが、  
+Azure Resouce Managerでは別リソースとして扱われる
 ```
 ストレージアカウント
 Type:Microsoft.storage/storateAccounts
@@ -48,7 +48,7 @@ name:Storagename（自由に決めることができる）
 https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-or-update?view=rest-storagerp-2025-08-01&utm_source=chatgpt.com&tabs=HTTP
 
 
-## 3-1. Type
+## 3-1. type
 ポリシーの条件「type」で評価対象のリソースを絞っている
 
 つまり、  
@@ -65,7 +65,7 @@ https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-
 **field**がリソースの項目を直接見るのに対し、  
 **value**は関数を使って値を計算する
 
-### [first(split(field('fullName'),'/'))]
+### ● [first(split(field('fullName'),'/'))]
 
 例えば、対象リソース(Typeで指定しているリソース)がライフサイクル管理の場合、以下のようになる
 
@@ -74,10 +74,10 @@ name＝default
 fullName＝Storagename(ストレージアカウント名)/default
 ```
 ※fullname は親子関係を含めた名前であり、リソースIDはさらに上位の階層まで含めた識別情報である。  
-　そのためfullNameはストレージアカウント名/defalutという形になる
+　そのためfullNameはストレージアカウント名/defalutという形になる  
 参照ページ：https://learn.microsoft.com/ja-jp/azure/governance/policy/concepts/definition-structure-policy-rule#fields
 
-これを
+fullNameを
 ```
 split(field('fullName'),'/'
 ```
@@ -89,24 +89,25 @@ split(field('fullName'),'/'
 ]
 ```
 
+つまり↓下記は「fullName」の先頭部分、つまりストレージアカウント名だけを取り出す  
+＝ポリシーでライフサイクル管理に紐づくストレージアカウント名に条件を付けることができる 
 
 ```
 [first(split(field('fullName'),'/'))]
 ```
-つまり↑上記は「fullName」の先頭部分、つまりストレージアカウント名だけを取り出す  
-＝ポリシーでライフサイクル管理に紐づくストレージアカウント名に条件を付けることができる  
+ 
 ※ 例：
 ```
 {
     "value":"[first(split(field('fullName'),'/'))]"
     "like":"st-*-hitsuji"
 }
+```
 
 
 
 
-
-### [resourceGroup().name]
+### ● [resourceGroup().name]
 
 例えば、
 ```
