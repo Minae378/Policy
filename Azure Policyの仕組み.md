@@ -11,9 +11,8 @@ AzureポリシーはAzureでの<span style="color: red;">**リソース**</span>
 
 <span style="color: green;">※ストレージアカウント系が私のトレンドであるため、例がだいたいストレージアカウント関係となっております。ご了承ください。</span>
 
-## 3. ポリシーの評価対象
+## 3. ポリシーは何を見ているのか（ポリシーの評価対象）
 
-### 3-1. ポリシーは何を見ているのか
 ポリシーは基本的に、現在作成または更新されようとしている<span style="color: red;">**リソース**</span>を見る
 
 例えば、ストレージアカウントを作成する場合は、以下のリソースをポリシーは見る
@@ -30,12 +29,17 @@ Azureポータルでは同じストレージアカウント画面から操作す
 Azure Rexouuce Managerでは別リソースとして扱われる
 ```
 ストレージアカウント
-Microsoft.storage/storateAccounts
+Type:Microsoft.storage/storateAccounts
+name:Storagename（自由に決めることができる）
 │
 └── ライフサイクル管理
 　　type：Microsoft.storage/storateAccounts/managementPolicies
-　　name：default
+　　name：default（すでに決められている・変更不可）
     Properties：※ルール名等が含まれる（Policy.rules）
+    │
+    └── ルール
+        name:Rulename（自由に決めることができる）
+    　　type:Lifecycle
 ```
 
 <span style="color: green;">**Tips**</span>   
@@ -44,7 +48,7 @@ Microsoft.storage/storateAccounts
 https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-or-update?view=rest-storagerp-2025-08-01&utm_source=chatgpt.com&tabs=HTTP
 
 
-### 3-2. Type
+## 3-1. Type
 ポリシーの条件「type」で評価対象のリソースを絞っている
 
 つまり、  
@@ -57,15 +61,58 @@ https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-
 
 
 
-Value
+## 3-2. value
 **field**がリソースの項目を直接見るのに対し、  
 **value**は関数を使って値を計算する
+
+### [first(split(field('fullName'),'/'))]
+
+例えば、対象リソース(Typeで指定しているリソース)がライフサイクル管理の場合、以下のようになる
+
+```
+name＝default
+fullName＝Storagename(ストレージアカウント名)/default
+```
+※fullname は親子関係を含めた名前であり、リソースIDはさらに上位の階層まで含めた識別情報である。  
+　そのためfullNameはストレージアカウント名/defalutという形になる
+参照ページ：https://learn.microsoft.com/ja-jp/azure/governance/policy/concepts/definition-structure-policy-rule#fields
+
+これを
+```
+split(field('fullName'),'/'
+```
+すると以下のようになる
+```
+[
+    "Storagename(ストレージアカウント名)"
+    "default"
+]
+```
+
+
+```
+[first(split(field('fullName'),'/'))]
+```
+つまり↑上記は「fullName」の先頭部分、つまりストレージアカウント名だけを取り出す  
+＝ポリシーでライフサイクル管理に紐づくストレージアカウント名に条件を付けることができる  
+※ 例：
+```
+{
+    "value":"[first(split(field('fullName'),'/'))]"
+    "like":"st-*-hitsuji"
+}
+
+
+
+
+
+### [resourceGroup().name]
 
 例えば、
 ```
 {
-    "value":"[resourceGroup().name]
-    "like":"rg-*-storage"
+    "value":"[resourceGroup().name]"
+    "like":"rg-*-arupaka"
 }
 ```
 ↑<span style="color: red;">**評価対象リソース**</span> が所属するリソースグループ名を取得し、上記の条件と一致するか判定
@@ -73,7 +120,8 @@ Value
 今回の<span style="color: red;">**評価対象リソース**</span>がライフサイクル管理の場合  
 "[resourceGroup().name]の結果は  
 以下のリソースIDのリソースグループ名が返ってくる  
-●リソースID  
+●リソースID
+
 ```
 /subscription/XXX(サブスクリプション名)
 /resourceGroup/XXX(リソースグループ名)
