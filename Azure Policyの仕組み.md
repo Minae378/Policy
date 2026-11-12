@@ -103,7 +103,8 @@ split(field('fullName'),'/'
     "like":"st-*-hitsuji"
 }
 ```
-
+first関数参照ページ：  
+https://learn.microsoft.com/ja-jp/azure/azure-resource-manager/templates/template-functions-array#first
 
 
 
@@ -131,6 +132,9 @@ split(field('fullName'),'/'
 /managementPolicies/default(ライフサイクル管理名は常にdefault)
 ```
 
+resourceGroup関数参照ページ：  
+https://learn.microsoft.com/ja-jp/azure/azure-resource-manager/templates/template-functions-scope#resourcegroup
 
-関数の説明ページ：  
+
+関数一覧ページ：  
 https://learn.microsoft.com/ja-jp/azure/azure-resource-manager/templates/template-functions
