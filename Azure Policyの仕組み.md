@@ -49,6 +49,9 @@ name:Storagename（自由に決めることができる）
 https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-or-update?view=rest-storagerp-2025-08-01&utm_source=chatgpt.com&tabs=HTTP
 
 ## 4. field
+field役割は、Azureリソースが持っているプロパティを直接指定して、その値をチェックすること
+
+参照ページ：https://learn.microsoft.com/ja-jp/azure/governance/policy/concepts/definition-structure-policy-rule#field-expressions
 
 ## 4-1. type
 ポリシーの条件「type」で評価対象のリソースを絞っている
@@ -64,6 +67,8 @@ https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-
 
 
 ## 5. value
+valueの役割は指定した値や関数の計算結果を取得して、条件と比較すること  
+fieldと比較すると、  
 **field**がリソースの項目を直接見るのに対し、  
 **value**は関数を使って値を計算する
 
