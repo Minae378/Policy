@@ -1,9 +1,10 @@
-# ポリシーの仕組みについて
+# ポリシーの仕組みと「Field」/「value」について
 
 ## 1. 目的とゴール
-ポリシーの仕組みを理解し、ポリシーの読み取りや、カスタムポリシー作成に活かすことができる
+ポリシーの仕組みを理解し、ポリシーの読み取りや、カスタムポリシー作成に活かすことができる  
+ポリシー規則の「field」と「value」の違いを理解することができる
 
-## 2. 概要
+## 2. 仕組みの概要
 AzureポリシーはAzureでの<span style="color: red;">**リソース**</span>作成・更新内容をポリシールールと照合し、許可や拒否などを行う仕組み
 
 > **※重要**  
@@ -47,8 +48,9 @@ name:Storagename（自由に決めることができる）
 <span style="color: green;">↓公式ページ</span>  
 https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-or-update?view=rest-storagerp-2025-08-01&utm_source=chatgpt.com&tabs=HTTP
 
+## 4. field
 
-## 3-1. type
+## 4-1. type
 ポリシーの条件「type」で評価対象のリソースを絞っている
 
 つまり、  
@@ -61,11 +63,11 @@ https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-
 
 
 
-## 3-2. value
+## 5. value
 **field**がリソースの項目を直接見るのに対し、  
 **value**は関数を使って値を計算する
 
-### ● [first(split(field('fullName'),'/'))]
+## 5-1. [first(split(field('fullName'),'/'))]
 
 例えば、対象リソース(Typeで指定しているリソース)がライフサイクル管理の場合、以下のようになる
 
@@ -108,7 +110,7 @@ https://learn.microsoft.com/ja-jp/azure/azure-resource-manager/templates/templat
 
 
 
-### ● [resourceGroup().name]
+## 5-2. [resourceGroup().name]
 
 例えば、
 ```
