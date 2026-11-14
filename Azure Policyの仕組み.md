@@ -1,4 +1,4 @@
-# ポリシーの仕組みと「Field」/「value」について
+# ポリシーの仕組みと「field」/「value」について
 
 ## 1. 目的とゴール
 ポリシーの仕組みを理解し、ポリシーの読み取りや、カスタムポリシー作成に活かすことができる  
@@ -43,7 +43,7 @@ name:Storagename（自由に決めることができる）
     　　type:Lifecycle
 ```
 
-<span style="color: green;">**Tips**</span>   
+### Tips   
 <span style="color: green;">ライフサイクル管理の名前は 'default' にする必要がある</span>  
 <span style="color: green;">↓公式ページ</span>  
 https://learn.microsoft.com/ja-jp/rest/api/storagerp/management-policies/create-or-update?view=rest-storagerp-2025-08-01&utm_source=chatgpt.com&tabs=HTTP
@@ -54,9 +54,9 @@ field役割は、Azureリソースが持っているプロパティを直接指�
 参照ページ：https://learn.microsoft.com/ja-jp/azure/governance/policy/concepts/definition-structure-policy-rule#field-expressions
 
 ## 4-1. type
-ポリシーの条件「type」で評価対象のリソースを絞っている
+ポリシーの条件「type」で**評価対象のリソース**を絞っている
 
-つまり、  
+つまり、例えば  
 ポリシーで<span style="color: purple;">**ライフサイクル管理**</span> の最低日数を定めたい場合  
 １）ポリシーの「type」＝「Microsoft.storage/storateAccounts」の場合  
 →ポリシーが適用されない  
@@ -64,15 +64,37 @@ field役割は、Azureリソースが持っているプロパティを直接指�
 ２）ポリシーの「type」＝「Microsoft.storage/storateAccounts/<span style="color: purple;">**managementPolicies**</span>」の場合  
 →ポリシーが適用される  
 
+### ポイント
+Azure Policyは、リソースの作成・更新時に、その操作の対象となる**リソース**を評価する。  
+
+今回のように、**ライフサイクル管理**の設定内容（ルールや日数など）を評価したい場合は、**ライフサイクル管理**自体の新規作成・更新をきっかけに評価する必要がある。  
+
+そのため、**type** は**ライフサイクル管理**のリソース型を指定する必要がある。  
+
+一方、**type** を**ストレージアカウント**に指定しても、今回変更しているのは**ライフサイクル管理**の設定であり、<ins>**ストレージアカウント**自体の情報は変更されていない。<ins>  
+そのため、**ストレージアカウント**を評価対象にしても、変更された**ライフサイクル管理**の設定内容を適切に評価できない。  
+
+つまり、<ins>評価したい設定が属しているリソースの種類を type に指定することが重要。<ins>  
 
 
-## 5. value
-valueの役割は指定した値や関数の計算結果を取得して、条件と比較すること  
-fieldと比較すると、  
-**field**がリソースの項目を直接見るのに対し、  
-**value**は関数を使って値を計算する
+## 4-2. id
+**id**はリソース」ID。  
+**id** はリソースの「一意の識別パス（住所）」を指し、field: **type** はリソースの「種類（カテゴリ）」を指します。
 
-## 5-1. [first(split(field('fullName'),'/'))]
+
+| field | 値の例 |
+| --- | --- |
+| id | /subscriptions/xxxx/resourceGroups/rg1/providers/Microsoft.Compute/virtualMachines/vm01 |
+| type | Microsoft.Compute/virtualMachines |
+
+
+## 4-3. name/fullname
+Azure Policyにおける **name** と **fullName** の違いは、リソースの名前だけを取得するか、親リソースを含めた完全な名前を取得するか という違い。
+| Field	| 意味 | 取得する値
+| --- | --- | --- |
+| name | リソース自身の名前 | default
+| fullName | 親リソースを含めた完全な名前 | storageaccount01/default
+
 
 例えば、対象リソース(Typeで指定しているリソース)がライフサイクル管理の場合、以下のようになる
 
@@ -84,7 +106,18 @@ fullName＝Storagename(ストレージアカウント名)/default
 　そのためfullNameはストレージアカウント名/defalutという形になる  
 参照ページ：https://learn.microsoft.com/ja-jp/azure/governance/policy/concepts/definition-structure-policy-rule#fields
 
-fullNameを
+
+
+## 5. value
+valueの役割は指定した値や関数の計算結果を取得して、条件と比較すること  
+fieldと比較すると、  
+**field**がリソースの項目を直接見るのに対し、  
+**value**は関数を使って値を計算する
+
+## 5-1. [first(split(field('fullName'),'/'))]
+
+
+ライフサイクル管理のfullNameを
 ```
 split(field('fullName'),'/'
 ```
